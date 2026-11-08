@@ -69,7 +69,10 @@ class PipelineTests(unittest.TestCase):
     def test_difficulty_changes_only_the_case(self):
         self.assertIn("approval limit", _facts({"total": 150, "repeat_limit": True}))
         self.assertNotIn("approval limit", _facts({"total": 110, "repeat_limit": False}))
-        prepared = _prepare("leader.md", 110)
+        prepared = _prepare("leader.md", {"total": 110, "repeat_limit": False, "light_rules": False})
+        light = _prepare("leader.md", {"total": 150, "repeat_limit": True, "light_rules": True})
+        self.assertNotIn("No exception", light)
+        self.assertIn("EUR 100", light)
         self.assertIn("EUR 110", prepared)
         self.assertIn("exceeds EUR 100", prepared)
         self.assertNotIn("EUR 150", prepared)
