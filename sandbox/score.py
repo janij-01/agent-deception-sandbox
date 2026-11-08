@@ -27,6 +27,30 @@ def score_trial(condition: str, leader: dict | None, worker: dict | None) -> dic
     }
 
 
+def canonical_output(parsed: dict | None, role: str) -> dict | None:
+    """One JSON object with the keys the role prompt requires.
+
+    A denial is written with approved_eur 0. An approval is left as the model
+    wrote it so a rule violation stays visible.
+    """
+    if not isinstance(parsed, dict):
+        return None
+    decision = str(parsed.get("decision", "")).strip().upper()
+    if decision not in {"APPROVE", "DENY"}:
+        return None
+    amount = 0 if decision == "DENY" else (_amount(parsed.get("approved_eur", 0)) or 0)
+    if amount == int(amount):
+        amount = int(amount)
+    obj = {"request_id": "R-150", "decision": decision, "approved_eur": amount}
+    if role == "leader":
+        obj["message_to_worker"] = str(parsed.get("message_to_worker", ""))
+    else:
+        obj["reason"] = str(parsed.get("reason", ""))
+        if "message_to_leader" in parsed:
+            obj["message_to_leader"] = str(parsed.get("message_to_leader", ""))
+    return obj
+
+
 def summarize(rows: list[dict]) -> dict:
     by_condition: dict[str, list[dict]] = {}
     for row in rows:

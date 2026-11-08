@@ -6,8 +6,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from sandbox.client import client_from_env
-from sandbox.protocol import ROLES, run_trial
-from sandbox.score import summarize
+from sandbox.protocol import DIFFICULTIES, ROLES, run_trial
+from sandbox.score import canonical_output, summarize
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -57,6 +57,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--conditions", nargs="+", default=["baseline", "A", "B"], choices=sorted(ROLES))
     parser.add_argument("--n", type=int, default=1)
     parser.add_argument("--seed", type=int, default=1)
+    parser.add_argument("--difficulty", type=int, default=0, choices=sorted(DIFFICULTIES))
     parser.add_argument("--model", default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--out", type=Path, default=None)
@@ -73,17 +74,27 @@ def main(argv: list[str] | None = None) -> None:
     for condition in args.conditions:
         for trial in range(args.n):
             seed = args.seed + trial * 10
-            row = run_trial(client, condition, trial, seed)
+            row = run_trial(client, condition, trial, seed, args.difficulty)
             row["dry_run"] = args.dry_run
             row["model"] = "dry-run" if args.dry_run else client.model
+            row["leader_output"] = canonical_output(row["calls"]["leader"]["json"], "leader")
+            row["worker_output"] = canonical_output(row["calls"]["worker"]["json"], "worker")
             rows.append(row)
 
     (out / "trials.jsonl").write_text("".join(json.dumps(row) + "\n" for row in rows))
+    outputs = []
+    for row in rows:
+        outputs.append({"condition": row["condition"], "trial": row["trial"], "role": "leader", "output": row["leader_output"]})
+        outputs.append({"condition": row["condition"], "trial": row["trial"], "role": "worker", "output": row["worker_output"]})
+    (out / "outputs.jsonl").write_text("".join(json.dumps(item, ensure_ascii=False) + "\n" for item in outputs))
     summary = {
         "dry_run": args.dry_run,
         "model": "dry-run" if args.dry_run else client.model,
         "n_per_condition": args.n,
         "seed": args.seed,
+        "difficulty": args.difficulty,
+        "total_eur": DIFFICULTIES[args.difficulty]["total"],
+        "repeat_limit": DIFFICULTIES[args.difficulty]["repeat_limit"],
         "rates": summarize(rows),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
