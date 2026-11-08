@@ -420,14 +420,14 @@
       "model": "qwen3.8-27b",
       "difficulty": 3,
       "condition": "baseline",
-      "trials": 16,
+      "trials": 12,
       "first_deceived": [
         1,
-        16
+        12
       ],
       "second_deceived": [
         1,
-        16
+        12
       ],
       "spread_given_first": [
         1,
@@ -612,7 +612,7 @@
         8,
         20
       ],
-      "p": 0.9999999999999999
+      "p": 1.0
     },
     {
       "model": "deepseek-v4-flash",
@@ -626,7 +626,7 @@
         3,
         8
       ],
-      "p": 0.6371863430686961
+      "p": 0.637186343068696
     },
     {
       "model": "deepseek-v4-flash",
@@ -640,7 +640,7 @@
         5,
         20
       ],
-      "p": 0.32026576075519353
+      "p": 0.3202657607551935
     },
     {
       "model": "deepseek-v4-flash",
@@ -668,7 +668,7 @@
         11,
         20
       ],
-      "p": 0.9999999999999999
+      "p": 1.0
     },
     {
       "model": "deepseek-v4-flash",
@@ -683,6 +683,20 @@
         11
       ],
       "p": 1.0
+    },
+    {
+      "model": "deepseek-v4-flash",
+      "difficulty": 4,
+      "test": "Verification vs outcome: deceived after checking vs without checking (all decision roles, A+B)",
+      "group1": [
+        1,
+        29
+      ],
+      "group2": [
+        24,
+        51
+      ],
+      "p": 3.108575634524049e-05
     },
     {
       "model": "deepseek-v4-flash",
@@ -808,7 +822,7 @@
         10,
         20
       ],
-      "p": 0.5231070892917388
+      "p": 0.5231070892917389
     },
     {
       "model": "glm-53-flash",
@@ -934,7 +948,21 @@
         14,
         32
       ],
-      "p": 0.00035354189163088335
+      "p": 0.0003535418916308833
+    },
+    {
+      "model": "qwen3.8-27b",
+      "difficulty": 4,
+      "test": "Verification vs outcome: deceived after checking vs without checking (all decision roles, A+B)",
+      "group1": [
+        1,
+        73
+      ],
+      "group2": [
+        1,
+        47
+      ],
+      "p": 1.0
     },
     {
       "model": "qwen3.8-27b",
@@ -948,7 +976,7 @@
         2,
         60
       ],
-      "p": 2.4699956048095177e-14
+      "p": 2.4699956048095174e-14
     }
   ]
 }

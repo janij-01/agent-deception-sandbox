@@ -235,5 +235,31 @@ class CheckResultsTests(unittest.TestCase):
             self.assertIn("1 decision outputs mention checking", (run / "checks.md").read_text())
 
 
+class AnalysisExtrasTests(unittest.TestCase):
+    def setUp(self):
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+
+    def _write(self, folder, rows):
+        folder.mkdir(parents=True)
+        (folder / "trials.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+    def test_exclude_and_verification_outcome(self):
+        from analyze import analyse, load_rows
+        def row(cond, lv, ld, wv, wd):
+            return {"condition": cond, "trial": 0, "difficulty": 4, "allow_check": True, "model": "m",
+                    "first_role": "leader" if cond == "A" else "worker",
+                    "leader_verified": lv, "leader_deceived": ld, "worker_verified": wv, "worker_deceived": wd}
+        with TemporaryDirectory() as tmp:
+            run = Path(tmp) / "run1"
+            self._write(run, [row("A", True, False, False, True), row("B", False, True, False, True),
+                              row("baseline", False, False, False, False)])
+            self.assertEqual(len(load_rows([run], {("run1", "baseline")})), 2)
+            tests = analyse(load_rows([run]))["tests"]
+            outcome = [t for t in tests if t["test"].startswith("Verification vs outcome")][0]
+            self.assertEqual(outcome["group1"], [0, 1])
+            self.assertEqual(outcome["group2"], [3, 3])
+
+
 if __name__ == "__main__":
     unittest.main()

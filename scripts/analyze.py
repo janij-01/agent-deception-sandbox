@@ -48,7 +48,9 @@ def fisher_exact(a: int, b: int, c: int, d: int) -> float:
 
 # ---------- loading ----------
 
-def load_rows(paths: list[Path]) -> list[dict]:
+def load_rows(paths: list[Path], exclude: set[tuple[str, str]] | None = None) -> list[dict]:
+    """exclude holds (folder name, condition) pairs to drop, e.g. a rate-limited partial cell."""
+    exclude = exclude or set()
     rows = []
     for path in paths:
         files = [path] if path.is_file() else sorted(path.rglob("trials.jsonl"))
@@ -57,7 +59,7 @@ def load_rows(paths: list[Path]) -> list[dict]:
                 if not line.strip():
                     continue
                 row = json.loads(line)
-                if row.get("dry_run"):
+                if row.get("dry_run") or (file.parent.name, row["condition"]) in exclude:
                     continue
                 first = row.get("first_role") or ("leader" if row["condition"] in ("A", "baseline") else "worker")
                 second = "worker" if first == "leader" else "leader"
@@ -128,6 +130,16 @@ def analyse(rows: list[dict]) -> dict:
                 tests.append(_compare(model, difficulty,
                                       "Verification by position: first vs second (A+B; same trials, approximate)",
                                       count(both, "_first_verified"), count(both, "_second_verified")))
+        checked = [r for r in mrows if r.get("allow_check") and r["condition"] in ("A", "B")]
+        if checked:
+            calls = [(r.get(f"{role}_verified"), r.get(f"{role}_deceived"))
+                     for r in checked for role in ("leader", "worker")]
+            calls = [(v, d) for v, d in calls if v is not None and d is not None]
+            yes = [d for v, d in calls if v]
+            no = [d for v, d in calls if not v]
+            if yes and no:
+                tests.append(_compare(model, 4, "Verification vs outcome: deceived after checking vs without checking (all decision roles, A+B)",
+                                      (sum(yes), len(yes)), (sum(no), len(no))))
         attack = [r for r in mrows if r["condition"] in ("A", "B")]
         d5 = [r for r in attack if r["difficulty"] == 5]
         d4 = [r for r in attack if r["difficulty"] == 4]
@@ -158,6 +170,9 @@ def to_markdown(result: dict) -> str:
         lines.append(f"| {t['model']} | {t['difficulty']} | {t['test']} | {fmt(*t['group1'])} | {fmt(*t['group2'])} | "
                      f"{fmt_p(t['p']) if t['p'] == t['p'] else '-'} |")
     lines += ["", "Several comparisons are reported; treat p values near 0.05 as suggestive, not confirmed."]
+    if any(c["difficulty"] <= 3 for c in result["cells"]):
+        lines += ["", "At difficulty 0-3 the decision roles see the true EUR 150 total, so an approval there is a "
+                  "rule violation (typically a capped partial approval of EUR 100), not deception about the amount."]
     return "\n".join(lines) + "\n"
 
 
@@ -191,6 +206,9 @@ def make_figure(result: dict, path: Path) -> bool:
     for row, model in enumerate(models):
         for col, (title, groups) in enumerate(panels):
             ax = axes[row][col]
+            if not any(cells.get((model, d, c), {}).get(k, (0, 0))[1] for _, d, k in groups for c in ("A", "B")):
+                ax.text(0.5, 0.5, "not run for this model", ha="center", va="center", transform=ax.transAxes,
+                        fontsize=9, color="gray")
             for g, (label, difficulty, key) in enumerate(groups):
                 for i, condition in enumerate(("A", "B")):
                     cell = cells.get((model, difficulty, condition))
@@ -207,9 +225,10 @@ def make_figure(result: dict, path: Path) -> bool:
             ax.set_ylim(0, 1.18)
             ax.set_ylabel("Rate (95% Wilson CI)")
             ax.set_title(f"{model}: {title}", fontsize=10)
-            if col == 0:
-                ax.legend(fontsize=8, loc="upper right")
-    fig.tight_layout()
+            ax.set_xlim(-0.6, len(groups) - 0.4)
+    handles, labels = axes[0][0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center", ncol=2, fontsize=9, frameon=False)
+    fig.tight_layout(rect=(0, 0, 1, 1 - 0.35 / (3.8 * len(models))))
     fig.savefig(path, dpi=200)
     return True
 
@@ -218,8 +237,11 @@ def main(argv=None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("paths", nargs="+", type=Path)
     parser.add_argument("--out", type=Path, default=None, help="default: the first path given")
+    parser.add_argument("--exclude", nargs="*", default=[], metavar="FOLDER:CONDITION",
+                        help="drop one condition of one run folder, e.g. 20261108T220954Z:baseline")
     args = parser.parse_args(argv)
-    rows = load_rows(args.paths)
+    exclude = {tuple(item.split(":", 1)) for item in args.exclude}
+    rows = load_rows(args.paths, exclude)
     if not rows:
         sys.exit("no non-dry-run trials found")
     result = analyse(rows)
