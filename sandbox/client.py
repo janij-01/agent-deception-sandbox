@@ -45,6 +45,21 @@ def _post_json(url: str, api_key: str, body: dict, timeout: int) -> dict:
         raise RuntimeError("model API returned non-JSON") from exc
 
 
+TRANSIENT = ("HTTP 429", "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504", "request failed")
+
+
+def _post_with_retry(url: str, api_key: str, body: dict, timeout: int, attempts: int = 4) -> dict:
+    """Retry rate limits, gateway errors and curl timeouts with backoff (2, 4, 8 s)."""
+    for attempt in range(attempts):
+        try:
+            return _post_json(url, api_key, body, timeout)
+        except RuntimeError as exc:
+            if attempt == attempts - 1 or not any(code in str(exc) for code in TRANSIENT):
+                raise
+            time.sleep(2 ** (attempt + 1))
+    raise AssertionError("unreachable")
+
+
 class AdaptionClient:
     """Adaption Responses API. Memory and tools stay off so trials do not share state."""
 
@@ -65,15 +80,7 @@ class AdaptionClient:
             "agentic_memory": False,
             "store": False,
         }
-        payload = None
-        for attempt in range(3):
-            try:
-                payload = _post_json(ADAPTION_URL, self.api_key, body, self.timeout)
-                break
-            except RuntimeError as exc:
-                if attempt == 2 or "504" not in str(exc):
-                    raise
-                time.sleep(2)
+        payload = _post_with_retry(ADAPTION_URL, self.api_key, body, self.timeout)
         text = payload.get("output_text") or ""
         status = payload.get("status")
         if text.strip() and status in (None, "completed", "incomplete"):
@@ -90,7 +97,7 @@ class ChatClient:
         self.timeout = timeout
 
     def complete(self, system: str, user: str, seed: int) -> str:
-        payload = _post_json(
+        payload = _post_with_retry(
             self.base_url + "/chat/completions",
             self.api_key,
             {
