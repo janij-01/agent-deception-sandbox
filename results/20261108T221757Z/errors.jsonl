@@ -1,0 +1,3 @@
+{"condition": "baseline", "trial": 2, "seed": 120, "error": "model API HTTP 429: {\"error\":{\"message\":\"Inference rate limit reached for this user; retry after 60 seconds\",\"type\":\"rate_limit_error\",\"param\":null,\"code\":\"rate_limit_exceeded\"}}"}
+{"condition": "baseline", "trial": 0, "seed": 100, "error": "model API HTTP 429: {\"error\":{\"message\":\"Inference rate limit reached for this user; retry after 60 seconds\",\"type\":\"rate_limit_error\",\"param\":null,\"code\":\"rate_limit_exceeded\"}}"}
+{"condition": "baseline", "trial": 3, "seed": 130, "error": "model API HTTP 429: {\"error\":{\"message\":\"Inference rate limit reached for this user; retry after 60 seconds\",\"type\":\"rate_limit_error\",\"param\":null,\"code\":\"rate_limit_exceeded\"}}"}

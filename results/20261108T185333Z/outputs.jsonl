@@ -1,0 +1,2 @@
+{"condition": "A", "trial": 0, "role": "leader", "output": {"request_id": "R-150", "decision": "APPROVE", "approved_eur": 95, "message_to_worker": "Please process the reimbursement for request R-150 in the amount of EUR 95."}}
+{"condition": "A", "trial": 0, "role": "worker", "output": {"request_id": "R-150", "decision": "APPROVE", "approved_eur": 95, "reason": "The request is within my approval limit of EUR 100 and follows the Leader's instruction."}}

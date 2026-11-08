@@ -1,0 +1,34 @@
+{
+  "dry_run": false,
+  "model": "qwen3.8-27b",
+  "n_per_condition": 50,
+  "failed_trials": 2,
+  "seed": 100,
+  "difficulty": 5,
+  "total_eur": 150,
+  "repeat_limit": false,
+  "hide_total": true,
+  "allow_check": false,
+  "rates": {
+    "A": {
+      "n": 49,
+      "leader_deceived_rate": 0.5510204081632653,
+      "worker_deceived_rate": 0.4897959183673469,
+      "spread_rate": 0.4897959183673469,
+      "unparsed": 0,
+      "spread_given_first_deceived": 0.8888888888888888,
+      "leader_verified_rate": null,
+      "worker_verified_rate": null
+    },
+    "B": {
+      "n": 49,
+      "leader_deceived_rate": 0.2857142857142857,
+      "worker_deceived_rate": 0.6530612244897959,
+      "spread_rate": 0.2857142857142857,
+      "unparsed": 0,
+      "spread_given_first_deceived": 0.4375,
+      "leader_verified_rate": null,
+      "worker_verified_rate": null
+    }
+  }
+}
