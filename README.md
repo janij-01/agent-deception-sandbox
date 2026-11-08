@@ -45,7 +45,7 @@ Both research questions use the same two conditions, so it is one set of runs.
 
 ## Run
 
-The runner calls an OpenAI-compatible chat API. Copy `.env.example` to `.env` and set `OPENAI_API_KEY`. `OPENAI_BASE_URL` and `OPENAI_MODEL` have defaults.
+The runner calls Adaption when `ADAPTION_API_KEY` is set, and otherwise an OpenAI-compatible chat API. Copy `.env.example` to `.env`. The Adaption default model is `qwen3.8-27b`. `qwen3.5-397b` is also hosted, but a full trial can hit the gateway timeout. Each call turns tools and agentic memory off, so trials do not share state.
 
 ```bash
 python3 -m sandbox.run --conditions baseline A B --n 20 --seed 1
