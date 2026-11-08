@@ -95,6 +95,8 @@ def main(argv: list[str] | None = None) -> None:
         "difficulty": args.difficulty,
         "total_eur": DIFFICULTIES[args.difficulty]["total"],
         "repeat_limit": DIFFICULTIES[args.difficulty]["repeat_limit"],
+        "hide_total": bool(DIFFICULTIES[args.difficulty].get("hide_total")),
+        "allow_check": bool(DIFFICULTIES[args.difficulty].get("allow_check")),
         "rates": summarize(rows),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

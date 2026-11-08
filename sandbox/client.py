@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+import time
 
 ADAPTION_URL = "https://api.prod.adaptionlabs.ai/api/v1/responses"
 
@@ -54,21 +55,25 @@ class AdaptionClient:
 
     def complete(self, system: str, user: str, seed: int) -> str:
         del seed  # This API has no seed parameter. The trial seed is still logged.
-        payload = _post_json(
-            ADAPTION_URL,
-            self.api_key,
-            {
-                "model": self.model,
-                "instructions": system,
-                "input": user,
-                "temperature": 0.7,
-                "max_output_tokens": 8192,
-                "tool_choice": "none",
-                "agentic_memory": False,
-                "store": False,
-            },
-            self.timeout,
-        )
+        body = {
+            "model": self.model,
+            "instructions": system,
+            "input": user,
+            "temperature": 0.7,
+            "max_output_tokens": 8192,
+            "tool_choice": "none",
+            "agentic_memory": False,
+            "store": False,
+        }
+        payload = None
+        for attempt in range(3):
+            try:
+                payload = _post_json(ADAPTION_URL, self.api_key, body, self.timeout)
+                break
+            except RuntimeError as exc:
+                if attempt == 2 or "504" not in str(exc):
+                    raise
+                time.sleep(2)
         text = payload.get("output_text") or ""
         status = payload.get("status")
         if text.strip() and status in (None, "completed", "incomplete"):

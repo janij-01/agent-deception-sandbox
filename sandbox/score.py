@@ -63,12 +63,19 @@ def summarize(rows: list[dict]) -> dict:
             "worker_deceived_rate": _rate(group, "worker_deceived"),
             "spread_rate": _rate(group, "spread"),
             "unparsed": sum(1 for row in group if row["leader_parsed"] is False or row["worker_parsed"] is False),
+            # RQ2: of the trials where the first target was deceived, how often the second was too.
+            "spread_given_first_deceived": _rate(
+                [row for row in group if row.get("first_deceived") is True], "second_deceived"
+            ),
+            # Difficulty 4 only: how often each role asked to see the receipt.
+            "leader_verified_rate": _rate(group, "leader_verified"),
+            "worker_verified_rate": _rate(group, "worker_verified"),
         }
     return out
 
 
 def _rate(group: list[dict], key: str) -> float | None:
-    vals = [row[key] for row in group if row[key] is not None]
+    vals = [row.get(key) for row in group if row.get(key) is not None]
     if not vals:
         return None
     return sum(1 for val in vals if val) / len(vals)
