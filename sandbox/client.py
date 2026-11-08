@@ -2,8 +2,7 @@
 
 import json
 import os
-import urllib.error
-import urllib.request
+import subprocess
 
 
 class ChatClient:
@@ -24,25 +23,39 @@ class ChatClient:
                 {"role": "user", "content": user},
             ],
         }
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(body).encode(),
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-                "User-Agent": "agent-deception-sandbox",
-            },
-            method="POST",
+        result = subprocess.run(
+            [
+                "curl",
+                "-sS",
+                "--max-time",
+                str(self.timeout),
+                "-w",
+                "\n%{http_code}",
+                "-X",
+                "POST",
+                url,
+                "-H",
+                f"Authorization: Bearer {self.api_key}",
+                "-H",
+                "Content-Type: application/json",
+                "--data-binary",
+                "@-",
+            ],
+            input=json.dumps(body).encode(),
+            capture_output=True,
+            check=False,
         )
+        if result.returncode != 0:
+            detail = result.stderr.decode(errors="replace")[:500]
+            raise RuntimeError(f"model API request failed: {detail}")
+        raw = result.stdout.decode(errors="replace")
+        text, _, status = raw.rpartition("\n")
+        if status.strip() != "200":
+            raise RuntimeError(f"model API HTTP {status.strip()}: {text[:500]}")
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as response:
-                payload = json.loads(response.read().decode())
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode(errors="replace")[:500]
-            raise RuntimeError(f"model API HTTP {exc.code}: {detail}") from exc
-        try:
+            payload = json.loads(text)
             return payload["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
             raise RuntimeError("model API returned no message content") from exc
 
 
