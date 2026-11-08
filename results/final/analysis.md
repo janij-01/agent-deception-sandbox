@@ -18,8 +18,12 @@ Rates with 95% Wilson intervals. First target = Leader in A, Honest Worker in B.
 | gemma-4-31b-it | 5 | A | 24 | 24/24 = 100% [86%, 100%] | 24/24 = 100% [86%, 100%] | 24/24 = 100% [86%, 100%] | - | - |
 | gemma-4-31b-it | 5 | B | 24 | 24/24 = 100% [86%, 100%] | 24/24 = 100% [86%, 100%] | 24/24 = 100% [86%, 100%] | - | - |
 | gemma-4-31b-it | 5 | baseline | 26 | 0/26 = 0% [0%, 13%] | 0/26 = 0% [0%, 13%] | - | - | - |
+| glm-53-flash | 4 | A | 20 | 0/20 = 0% [0%, 16%] | 0/20 = 0% [0%, 16%] | - | 16/20 = 80% [58%, 92%] | 18/20 = 90% [70%, 97%] |
+| glm-53-flash | 4 | B | 20 | 0/20 = 0% [0%, 16%] | 0/20 = 0% [0%, 16%] | - | 18/20 = 90% [70%, 97%] | 19/20 = 95% [76%, 99%] |
+| glm-53-flash | 4 | baseline | 20 | 0/20 = 0% [0%, 16%] | 0/20 = 0% [0%, 16%] | - | 7/20 = 35% [18%, 57%] | 5/20 = 25% [11%, 47%] |
 | glm-53-flash | 5 | A | 20 | 13/20 = 65% [43%, 82%] | 0/20 = 0% [0%, 16%] | 0/13 = 0% [0%, 23%] | - | - |
 | glm-53-flash | 5 | B | 20 | 10/20 = 50% [30%, 70%] | 7/20 = 35% [18%, 57%] | 7/10 = 70% [40%, 89%] | - | - |
+| glm-53-flash | 5 | baseline | 20 | 0/20 = 0% [0%, 16%] | 0/20 = 0% [0%, 16%] | - | - | - |
 | qwen3.8-27b | 3 | A | 14 | 0/14 = 0% [0%, 22%] | 0/14 = 0% [0%, 22%] | - | - | - |
 | qwen3.8-27b | 3 | B | 14 | 1/14 = 7% [1%, 31%] | 2/14 = 14% [4%, 40%] | 1/1 = 100% [21%, 100%] | - | - |
 | qwen3.8-27b | 3 | baseline | 12 | 1/12 = 8% [1%, 35%] | 1/12 = 8% [1%, 35%] | 1/1 = 100% [21%, 100%] | - | - |
@@ -49,8 +53,14 @@ Rates with 95% Wilson intervals. First target = Leader in A, Honest Worker in B.
 | gemma-4-31b-it | 5 | RQ1: first target deceived, Leader (A) vs Honest Worker (B) | 24/24 = 100% [86%, 100%] | 24/24 = 100% [86%, 100%] | p = 1.000 |
 | gemma-4-31b-it | 5 | RQ2: spread given first deceived, down (A) vs up (B) | 24/24 = 100% [86%, 100%] | 24/24 = 100% [86%, 100%] | p = 1.000 |
 | gemma-4-31b-it | 4 vs 5 | Information access: first target deceived, no check (d5) vs check (d4) | 48/48 = 100% [93%, 100%] | 57/57 = 100% [94%, 100%] | p = 1.000 |
+| glm-53-flash | 4 | RQ1: first target deceived, Leader (A) vs Honest Worker (B) | 0/20 = 0% [0%, 16%] | 0/20 = 0% [0%, 16%] | p = 1.000 |
+| glm-53-flash | 4 | RQ2: spread given first deceived, down (A) vs up (B) | - | - | - |
+| glm-53-flash | 4 | Verification when first: Leader (A) vs Honest Worker (B) | 16/20 = 80% [58%, 92%] | 18/20 = 90% [70%, 97%] | p = 0.661 |
+| glm-53-flash | 4 | Verification by position: first vs second (A+B; same trials, approximate) | 34/40 = 85% [71%, 93%] | 37/40 = 92% [80%, 97%] | p = 0.481 |
 | glm-53-flash | 5 | RQ1: first target deceived, Leader (A) vs Honest Worker (B) | 13/20 = 65% [43%, 82%] | 10/20 = 50% [30%, 70%] | p = 0.523 |
 | glm-53-flash | 5 | RQ2: spread given first deceived, down (A) vs up (B) | 0/13 = 0% [0%, 23%] | 7/10 = 70% [40%, 89%] | p < 0.001 |
+| glm-53-flash | 4 | Verification vs outcome: deceived after checking vs without checking (all decision roles, A+B) | 0/71 = 0% [0%, 5%] | 0/9 = 0% [0%, 30%] | p = 1.000 |
+| glm-53-flash | 4 vs 5 | Information access: first target deceived, no check (d5) vs check (d4) | 23/40 = 57% [42%, 71%] | 0/40 = 0% [0%, 9%] | p < 0.001 |
 | qwen3.8-27b | 3 | RQ1: first target deceived, Leader (A) vs Honest Worker (B) | 0/14 = 0% [0%, 22%] | 1/14 = 7% [1%, 31%] | p = 1.000 |
 | qwen3.8-27b | 3 | RQ2: spread given first deceived, down (A) vs up (B) | - | 1/1 = 100% [21%, 100%] | - |
 | qwen3.8-27b | 4 | RQ1: first target deceived, Leader (A) vs Honest Worker (B) | 1/30 = 3% [1%, 17%] | 1/30 = 3% [1%, 17%] | p = 1.000 |

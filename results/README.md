@@ -19,6 +19,8 @@ Completed counts are trials that returned a decision. The difference from the pl
 | `20261108T220954Z` | qwen3.8-27b | 3 | A, B | 15 | 14, 14 |
 | `20261108T221757Z` | qwen3.8-27b | 3 | baseline | 15 | 12 |
 | `20261108T221907Z` | glm-53-flash | 5 | A, B | 20 | 20, 20 |
+| `20261108T233753Z` | glm-53-flash | 5 | baseline | 20 | 20 |
+| `20261108T234047Z` | glm-53-flash | 4 | baseline, A, B | 20 | 20, 20, 20 |
 
 Difficulty 3 baseline in the report is `20261108T221757Z`. The same folder `20261108T220954Z` also contains 4 completed baseline trials from a rate-limited run. `analysis.md` excludes those 4 (`--exclude 20261108T220954Z:baseline`), so its difficulty 3 baseline row is the 12 trials from `20261108T221757Z`.
 
@@ -32,10 +34,12 @@ Pilot runs use seed 1. The scripted `dry-run/` directory is not a model result. 
 
 `20261108T220953Z` is an earlier DeepSeek difficulty 5 baseline cut short by rate limits (8 of 20). The replacement is `20261108T221704Z`. `20261108T220955Z` is the GLM run that was stopped when rate limits started; it has no completed trials. The replacement is `20261108T221907Z`.
 
+`20261108T233607Z` is a GLM difficulty 5 baseline run alongside difficulty 4; rate limits left 12 of 20. The replacement is `20261108T233753Z`. `20261108T233608Z` is the difficulty 4 run stopped at the same time. The replacement is `20261108T234047Z`.
+
 ## Reproduce
 
 ```bash
-F="results/20261108T185336Z results/20261108T190751Z results/20261108T191548Z results/20261108T191644Z results/20261108T191830Z results/20261108T192445Z results/20261108T211043Z results/20261108T211440Z results/20261108T221053Z results/20261108T221704Z results/20261108T220954Z results/20261108T221757Z results/20261108T221907Z"
+F="results/20261108T185336Z results/20261108T190751Z results/20261108T191548Z results/20261108T191644Z results/20261108T191830Z results/20261108T192445Z results/20261108T211043Z results/20261108T211440Z results/20261108T221053Z results/20261108T221704Z results/20261108T220954Z results/20261108T221757Z results/20261108T221907Z results/20261108T233753Z results/20261108T234047Z"
 python3 scripts/analyze.py $F --exclude 20261108T220954Z:baseline --out results/final
 python3 scripts/check_results.py $F
 ```
