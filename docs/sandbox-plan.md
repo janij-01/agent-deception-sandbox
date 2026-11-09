@@ -21,7 +21,7 @@ Both questions come from the same two conditions, so it is one set of runs.
 ## Split
 
 - **Valerio:** lower task difficulty so baseline deception is above zero.
-- **Janie:** add condition B, plus an LLM judge to score each trial.
+- **Jani:** add condition B, plus an LLM judge to score each trial.
 - **Hannah:** experiment design and stats, and lead the writeup. If time allows, run the judge on AI Village transcripts as a real-world check.
 
 ## Current prompts

@@ -9,7 +9,7 @@ The setup is a fictional sandbox. There are no real payments, accounts, or exter
 | Person | GitHub | Current split |
 | --- | --- | --- |
 | Valerio | [Valerio193](https://github.com/Valerio193) | Lower task difficulty so baseline deception is above zero |
-| Janie | [janij-01](https://github.com/janij-01) | Add condition B and an LLM judge that scores each trial |
+| Jani | [janij-01](https://github.com/janij-01) | Add condition B and an LLM judge that scores each trial |
 | Hannah | [hannahhb](https://github.com/hannahhb) | Experiment design and stats, and lead the writeup |
 
 This split is open to change.
