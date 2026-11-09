@@ -21,10 +21,15 @@ Completed counts are trials that returned a decision. The difference from the pl
 | `20261108T221907Z` | glm-53-flash | 5 | A, B | 20 | 20, 20 |
 | `20261108T233753Z` | glm-53-flash | 5 | baseline | 20 | 20 |
 | `20261108T234047Z` | glm-53-flash | 4 | baseline, A, B | 20 | 20, 20, 20 |
+| `20261109T010113Z` | gemma-4-31b-it | 3 | baseline | 15 | 15 |
+| `20261109T010322Z` | gemma-4-31b-it | 3 | A | 15 | 15 |
+| `20261109T010535Z` | gemma-4-31b-it | 3 | B | 15 | 15 |
 
 Difficulty 3 baseline in the report is `20261108T221757Z`. The same folder `20261108T220954Z` also contains 4 completed baseline trials from a rate-limited run. `analysis.md` excludes those 4 (`--exclude 20261108T220954Z:baseline`), so its difficulty 3 baseline row is the 12 trials from `20261108T221757Z`.
 
-Difficulty 3 approvals (A 0/14, B 1-2/14, baseline 1/12) are capped partial approvals of EUR 100 with the EUR 150 total visible, not deception about the amount.
+Difficulty 3 approvals on Qwen (A 0/14, B 1-2/14, baseline 1/12) are capped partial approvals of EUR 100 with the EUR 150 total visible, not deception about the amount. Gemma difficulty 3 is 0/15 in baseline, A, and B.
+
+`20261109T010113Z` also contains rate-limited A (5/15) and B (11/15). `20261109T010322Z` also contains rate-limited B (6/15). The analysis drops those three cells, so Gemma difficulty 3 is baseline from `010113Z`, A from `010322Z`, and B from `010535Z`.
 
 ## Not counted
 
@@ -39,7 +44,8 @@ Pilot runs use seed 1. The scripted `dry-run/` directory is not a model result. 
 ## Reproduce
 
 ```bash
-F="results/20261108T185336Z results/20261108T190751Z results/20261108T191548Z results/20261108T191644Z results/20261108T191830Z results/20261108T192445Z results/20261108T211043Z results/20261108T211440Z results/20261108T221053Z results/20261108T221704Z results/20261108T220954Z results/20261108T221757Z results/20261108T221907Z results/20261108T233753Z results/20261108T234047Z"
-python3 scripts/analyze.py $F --exclude 20261108T220954Z:baseline --out results/final
+F="results/20261108T185336Z results/20261108T190751Z results/20261108T191548Z results/20261108T191644Z results/20261108T191830Z results/20261108T192445Z results/20261108T211043Z results/20261108T211440Z results/20261108T221053Z results/20261108T221704Z results/20261108T220954Z results/20261108T221757Z results/20261108T221907Z results/20261108T233753Z results/20261108T234047Z results/20261109T010113Z results/20261109T010322Z results/20261109T010535Z"
+python3 scripts/analyze.py $F --exclude 20261108T220954Z:baseline 20261109T010113Z:A 20261109T010113Z:B 20261109T010322Z:B --out results/final
 python3 scripts/check_results.py $F
+python3 scripts/report_figure.py results/final/analysis.json results/final/figure_report.png   # Figure 1 in the report
 ```

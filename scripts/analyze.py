@@ -146,6 +146,10 @@ def analyse(rows: list[dict]) -> dict:
         if d5 and d4:
             tests.append(_compare(model, "4 vs 5", "Information access: first target deceived, no check (d5) vs check (d4)",
                                   count(d5, "_first_deceived"), count(d4, "_first_deceived")))
+        d3 = [r for r in attack if r["difficulty"] == 3]
+        if d5 and d3:
+            tests.append(_compare(model, "3 vs 5", "Receipt shown: first target deceived, hidden no check (d5) vs total visible (d3)",
+                                  count(d5, "_first_deceived"), count(d3, "_first_deceived")))
     return {"cells": table, "tests": tests}
 
 

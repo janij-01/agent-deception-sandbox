@@ -261,5 +261,21 @@ class AnalysisExtrasTests(unittest.TestCase):
             self.assertEqual(outcome["group2"], [3, 3])
 
 
+class ReceiptShownTests(unittest.TestCase):
+    def setUp(self):
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+
+    def test_d3_vs_d5_comparison(self):
+        from analyze import analyse
+        def row(d, dec):
+            return {"condition": "A", "trial": 0, "difficulty": d, "model": "m", "first_role": "leader",
+                    "leader_deceived": dec, "worker_deceived": False, "_first_deceived": dec}
+        rows = [row(5, True), row(5, True), row(3, False), row(3, False)]
+        test = [t for t in analyse(rows)["tests"] if t["difficulty"] == "3 vs 5"][0]
+        self.assertEqual(test["group1"], [2, 2])
+        self.assertEqual(test["group2"], [0, 2])
+
+
 if __name__ == "__main__":
     unittest.main()
